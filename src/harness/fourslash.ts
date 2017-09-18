@@ -2592,7 +2592,7 @@ namespace FourSlash {
             }
         }
 
-        public verifyNavigationTree(json: any) {
+        public verifyNavigationTree(json: any, checkSpans: boolean) {
             const tree = this.languageService.getNavigationTree(this.activeFile.fileName);
             if (JSON.stringify(tree, replacer) !== JSON.stringify(json)) {
                 this.raiseError(`verifyNavigationTree failed - expected: ${stringify(json)}, got: ${stringify(tree, replacer)}`);
@@ -2600,7 +2600,7 @@ namespace FourSlash {
 
             function replacer(key: string, value: any) {
                 // Don't check "spans", and omit falsy values.
-                return key === "spans" ? undefined : (value || undefined);
+                return key === "spans" && !checkSpans ? undefined : (value || undefined);
             }
         }
 
@@ -3970,8 +3970,8 @@ namespace FourSlashInterface {
             this.state.verifyNavigationBar(json);
         }
 
-        public navigationTree(json: any) {
-            this.state.verifyNavigationTree(json);
+        public navigationTree(json: any, checkSpans?: boolean) {
+            this.state.verifyNavigationTree(json, checkSpans);
         }
 
         public navigationItemsListCount(count: number, searchValue: string, matchKind?: string, fileName?: string) {

@@ -209,17 +209,23 @@ namespace ts.NavigationBar {
 
             case SyntaxKind.BindingElement:
             case SyntaxKind.VariableDeclaration:
-                const decl = <VariableDeclaration>node;
-                const name = decl.name;
+                const { name, initializer } = <VariableDeclaration | BindingElement>node;
                 if (isBindingPattern(name)) {
                     addChildrenRecursively(name);
                 }
-                else if (decl.initializer && isFunctionOrClassExpression(decl.initializer)) {
-                    // For `const x = function() {}`, just use the function node, not the const.
-                    addChildrenRecursively(decl.initializer);
+                else if (initializer && isArrowFunction(initializer) || isFunctionExpression(initializer) || isClassExpression(initializer)) {
+                    if (initializer.name) {
+                        addChildrenRecursively(initializer);
+                    }
+                    else {
+                        startNode(node);
+                        // Skip adding a node for the initializer; it's handled by the variable declaration.
+                        forEachChild(initializer, addChildrenRecursively);
+                        endNode();
+                    }
                 }
                 else {
-                    addNodeWithRecursiveChild(decl, decl.initializer);
+                    addNodeWithRecursiveChild(node, initializer);
                 }
                 break;
 
@@ -642,9 +648,5 @@ namespace ts.NavigationBar {
         else {
             return isClassLike(node) ? "<class>" : "<function>";
         }
-    }
-
-    function isFunctionOrClassExpression(node: Node): boolean {
-        return node.kind === SyntaxKind.FunctionExpression || node.kind === SyntaxKind.ArrowFunction || node.kind === SyntaxKind.ClassExpression;
     }
 }
