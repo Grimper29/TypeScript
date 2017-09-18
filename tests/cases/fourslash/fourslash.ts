@@ -117,6 +117,7 @@ declare namespace FourSlashInterface {
         rangesByText(): ts.Map<Range[]>;
         markerByName(s: string): Marker;
         symbolsInScope(range: Range): any[];
+        setTypesRegistry(map: { [key: string]: void }): void;
     }
     class goTo {
         marker(name?: string | Marker): void;
@@ -154,7 +155,7 @@ declare namespace FourSlashInterface {
         implementationListIsEmpty(): void;
         isValidBraceCompletionAtPosition(openingBrace?: string): void;
         isInCommentAtPosition(onlyMultiLineDiverges?: boolean): void;
-        codeFixAvailable(options: Array<{ description: string, actions: Array<{ type: string, data: {} }> }>): void;
+        codeFixAvailable(options: Array<{ description: string, actions: Array<{}> }>): void;
         applicableRefactorAvailableAtMarker(markerName: string): void;
         codeFixDiagnosticsAvailableAtMarkers(markerNames: string[], diagnosticCode?: number): void;
         applicableRefactorAvailableForRange(): void;
